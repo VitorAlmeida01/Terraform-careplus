@@ -1,0 +1,74 @@
+name: CI/CD Frontend CarePlus
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch para executar o workflow'
+        required: true
+        default: 'main'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment: ci-cd
+
+    steps:
+      # 1. Checkout do repositório do frontend
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      # 2. Configurar Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # 3. Instalar dependências e fazer build
+      - name: Instalar Dependências e Fazer Build
+        run: |
+          npm install
+          npm run build --if-present
+        working-directory: ./careplus
+
+      # 4. Enviar build para diretório temporário do ubuntu (evita problema de permissão em /var/www)
+      - name: Copiar dist/ para EC2 Frontend
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.FRONTEND_HOST }}
+          REMOTE_USER: ubuntu
+          TARGET: /home/ubuntu/dist/
+          ARGS: "-rltgoDzvO --delete"
+          SOURCE: "careplus/dist/"
+
+      # 5. Mover arquivos para /var/www/careplus, ajustar permissões e recarregar Nginx
+      - name: Deploy e Recarregar Nginx na EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.FRONTEND_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            echo "==> Movendo arquivos para /var/www/careplus/..."
+            sudo rsync -a --delete /home/ubuntu/dist/ /var/www/careplus/
+            sudo chown -R www-data:www-data /var/www/careplus
+            sudo chmod -R 755 /var/www/careplus
+            echo "Arquivos copiados: $(ls -1 /var/www/careplus/ | wc -l) itens na raiz"
+
+            echo "==> Recarregando Nginx..."
+            sudo nginx -t && sudo systemctl reload nginx
+
+            if systemctl is-active --quiet nginx; then
+              echo "✓ Frontend CarePlus disponível"
+            else
+              echo "✗ ERRO: Nginx não está ativo"
+              sudo systemctl status nginx
+              exit 1
+            fi
