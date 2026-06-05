@@ -3,7 +3,7 @@
 # Bootstrap Frontend – Nginx
 # - Instala Nginx e AWS CLI
 # - Baixa o build do frontend do S3 (pasta frontend/)
-# - Configura proxy reverso → backend:8080
+# - Configura proxy reverso → ALB (DNS estável, nunca muda)
 # =====================================================
 set -e
 exec > >(tee -a /var/log/user-data.log) 2>&1
@@ -11,7 +11,7 @@ exec > >(tee -a /var/log/user-data.log) 2>&1
 echo "[$(date)] Iniciando bootstrap Frontend (Nginx)"
 
 # ----- Variáveis injetadas pelo Terraform -----
-BACKEND_PRIVATE_IP="${backend_private_ip}"
+ALB_DNS="${alb_dns}"
 BUCKET_NAME="${bucket_name}"
 # ----------------------------------------------
 
@@ -71,10 +71,10 @@ server {
         try_files \$uri \$uri/ /index.html;
     }
 
-    # Proxy reverso para o backend Spring Boot
-    # /api/* → http://backend:8080/*  (prefixo /api removido)
+    # Proxy reverso para o backend via ALB
+    # /api/* → http://ALB/*  (prefixo /api removido)
     location /api/ {
-        proxy_pass         http://$BACKEND_PRIVATE_IP:8080/;
+        proxy_pass         http://$ALB_DNS/;
         proxy_http_version 1.1;
         proxy_set_header   Host              \$host;
         proxy_set_header   X-Real-IP         \$remote_addr;

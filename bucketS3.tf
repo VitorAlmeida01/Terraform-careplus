@@ -16,21 +16,6 @@ resource "aws_s3_bucket" "Bucket_CarePlus_Deploy" {
   tags = { Name = "Bucket_CarePlus_Deploy" }
 }
 
-# Buckets adicionais (mantidos do projeto original - "prata" e "ouro")
-resource "aws_s3_bucket" "Bucket_CarePlus_Prata" {
-  bucket        = "careplus-prata-${random_id.bucket_suffix.hex}"
-  force_destroy = true
-
-  tags = { Name = "Bucket_CarePlus_Prata" }
-}
-
-resource "aws_s3_bucket" "Bucket_CarePlus_Ouro" {
-  bucket        = "careplus-ouro-${random_id.bucket_suffix.hex}"
-  force_destroy = true
-
-  tags = { Name = "Bucket_CarePlus_Ouro" }
-}
-
 # =====================================================
 # Upload dos artefatos para o bucket de deploy
 # =====================================================

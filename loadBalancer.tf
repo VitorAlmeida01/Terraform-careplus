@@ -9,7 +9,7 @@ resource "aws_lb" "LB_CarePlus" {
   load_balancer_type = "application"
   internal           = false
 
-  security_groups = [aws_security_group.SG_Backend_CarePlus.id]
+  security_groups = [aws_security_group.SG_ALB_CarePlus.id]
 
   subnets = [
     aws_subnet.Subnet_Publica1_CarePlus.id,

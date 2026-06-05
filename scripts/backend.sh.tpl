@@ -129,7 +129,7 @@ docker run -d \
   -e 'SPRING_RABBITMQ_NETWORK_RECOVERY_INTERVAL=5000' \
   -e 'SPRING_RABBITMQ_AUTOMATIC_RECOVERY_ENABLED=true' \
   -e 'AWS_DEFAULT_REGION=us-east-1' \
-  -e 'AWS_S3_BUCKET_NAME=bucket-prontuarios-4' \
+  -e 'AWS_S3_BUCKET_NAME=bucket-prontuarios-careplus' \
   -e 'AWS_S3_BUCKET_RENOVAR_AGENDA_NAME=renovar-agenda-careplus' \
   -e 'JAVA_TOOL_OPTIONS=-Xms256m -Xmx768m' \
   -v $DEPLOY_DIR/careplus.jar:/app/app.jar:ro \

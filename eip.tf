@@ -16,13 +16,6 @@ resource "aws_nat_gateway" "NAT_CarePlus" {
   depends_on = [aws_internet_gateway.IGW_CarePlus]
 }
 
-resource "aws_eip" "EIP_RabbitMQ" {
-  instance = aws_instance.EC2_RabbitMQ_CarePlus.id
-  domain   = "vpc"
-
-  tags = { Name = "EIP_RabbitMQ_CarePlus" }
-}
-
 resource "aws_eip" "EIP_Frontend" {
   instance = aws_instance.EC2_Frontend_CarePlus.id
   domain   = "vpc"
