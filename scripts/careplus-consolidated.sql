@@ -300,7 +300,7 @@ INSERT INTO consulta_funcionario (id, consulta_id, funcionario_id) VALUES
 (4, 4, 3);
 
 INSERT INTO responsavel (id, nome, email, telefone, dt_nascimento, cpf, id_endereco, ativo) VALUES
-(1,'Clara','clara.responsavel@gmail.com','11955001001','2002-01-16','30099988877',3,1),
+(1,'Clara','clara.responsavel@gmail.com','11953248144','2002-01-16','30099988877',3,1),
 (2,'Vinicius Dias','vinicius@gmail.com','11955001002','1990-01-16','40011122233',2,1);
 
 INSERT INTO classificacao_doencas (id, cid, dt_modificacao, prontuario_id) VALUES
